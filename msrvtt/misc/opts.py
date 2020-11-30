@@ -9,7 +9,7 @@ def parse_opts():
     parser.add_argument(
         '--scene_graph_path',
         type=str,
-        default='../data/MSR-VTT/files/',
+        default='data/graph/',
         help='path to the pickle file containing scene graph information')
     parser.add_argument(
         '--total_node',
@@ -90,20 +90,17 @@ def parse_opts():
     parser.add_argument(
         '--train_node_lmdb',
         type=str,
-        # default='../data/MSR-VTT/files/msrvtt_seg_node_train',
-        default='../data/MSR-VTT/files/msrvtt_seg_node_train_',
+        default='data/graph/msrvtt_seg_node_train',
         help='path to the lmdb file containing the preprocessed segmentation output')
     parser.add_argument(
         '--val_node_lmdb',
         type=str,
-        # default='../data/MSR-VTT/files/msrvtt_seg_node_val',
-        default='../data/MSR-VTT/files/msrvtt_seg_node_val_',
+        default='data/graph/msrvtt_seg_node_val',
         help='path to the lmdb file containing the preprocessed segmentation output')
     parser.add_argument(
         '--test_node_lmdb',
         type=str,
-        # default='../data/MSR-VTT/files/msrvtt_seg_node_test',
-        default='../data/MSR-VTT/files/msrvtt_seg_node_test_',
+        default='data/graph/msrvtt_seg_node_test',
         help='path to the lmdb file containing the preprocessed segmentation output')
 
 

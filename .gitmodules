@@ -1,6 +1,0 @@
-[submodule "msrvtt/coco-caption"]
-	path = msrvtt/coco-caption
-	url = https://github.com/ruotianluo/coco-caption/tree/ea20010419a955fed9882f9dcc53f2dc1ac65092
-[submodule "msrvtt/cider"]
-	path = msrvtt/cider
-	url = https://github.com/ruotianluo/cider/tree/e9b736d038d39395fa2259e39342bb876f1cc877

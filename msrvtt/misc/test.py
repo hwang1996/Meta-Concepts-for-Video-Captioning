@@ -84,8 +84,6 @@ if __name__ == '__main__':
     model.load_state_dict(checkpoint['model'])
 
     xe_criterion = CrossEntropyCriterion()
-    smooth_crit = utils.LabelSmoothingLoss(label_smoothing=0.1, \
-                                           tgt_vocab_size=opt.vocab_size, ignore_index=-1)
 
     if torch.cuda.is_available():
         model.cuda()

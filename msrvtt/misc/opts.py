@@ -14,7 +14,7 @@ def parse_opts():
     parser.add_argument(
         '--total_node',
         type=int,
-        default=200,
+        default=200,   ## scene graph relationship class number + object class number
         help='maximum node number of scene graph')
 
 
@@ -164,12 +164,22 @@ def parse_opts():
         '--num_lm_layer',
         type=int,
         default=1,
-        help='size of the rnn in number of hidden nodes in each layer')
+        help='rnn layer number')
     parser.add_argument(
         '--input_encoding_size',
         type=int,
         default=512,
         help='the encoding size of each frame in the video.')
+    parser.add_argument(
+        '--mc_size',
+        type=int,
+        default=2048,
+        help='size of the meta concept features')
+    parser.add_argument(
+        '--mc_cls',
+        type=int,
+        default=60,
+        help='predefined class number of meta concepts')
     parser.add_argument(
         '--max_epochs',
         type=int,
@@ -263,8 +273,7 @@ def parse_opts():
             'Bleu_4',
             'METEOR',
             'ROUGE_L',
-            'CIDEr',
-            'MSRVTT'],
+            'CIDEr'],
         help='Evaluation metrics')
     parser.add_argument(
         '--test_language_eval',
@@ -312,7 +321,7 @@ def parse_opts():
     parser.add_argument(
         '--rnn_num_layers',
         type=int,
-        default=2,
+        default=1,
         help='number of layers in the lstm ')
 
     parser.add_argument(

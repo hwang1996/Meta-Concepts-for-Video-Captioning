@@ -7,7 +7,6 @@ import os
 import numpy as np
 import random
 import time
-# import cPickle
 import pickle
 import lmdb
 
@@ -63,7 +62,6 @@ class DataLoader():
         for ii, feat_h5_file in enumerate(feat_h5_files):
             self.feat_h5.append(h5py.File(feat_h5_files[ii], 'r'))
             self.feat_dims.append(self.feat_h5[ii][self.videos[0]].shape[0])
-        # import pdb; pdb.set_trace()
 
         self.num_feats = len(feat_h5_files)
 
@@ -171,7 +169,6 @@ class DataLoader():
                 if self.bcmrscores_pkl is not None:
                     bcmrscores[ii] = self.bcmrscores[idx]
                     
-            # import pdb; pdb.set_trace()
             
             try:
                 seg_label, seg_fea = pickle.loads(self.txn.get(('video'+str(video_id)).encode()))
@@ -208,7 +205,6 @@ class DataLoader():
                 logger.info('===> Finished loading epoch %d', self.epoch)
                 self.iterator = 0
                 self.epoch += 1
-                # import pdb; pdb.set_trace()
                 if self.mode == 'train':
                     self.shuffle_videos()
 
@@ -231,13 +227,11 @@ class DataLoader():
             for j, adj_len in enumerate(sg_adj_len[i]):
                 sg_adj_batch[i, :end, :adj_len, :adj_len] = sg_adjs[i][j]
                 sg_feat_batch[i, :end, :adj_len] = sg_feats[i][j]
-            # import pdb; pdb.set_trace()
 
             end_g = sg_g_lengths[i]
             sg_adj_g_batch[i, :end_g, :end_g] = sg_adjs_g[i]
             sg_feat_g_batch[i, :end_g] = sg_feats_g[i]
                 
-        # import pdb; pdb.set_trace()
 
         data['sg_adj'] = sg_adj_batch
         data['sg_feat'] = sg_feat_batch

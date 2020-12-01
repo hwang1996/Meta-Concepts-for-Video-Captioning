@@ -22,14 +22,12 @@ class RewardCriterion(nn.Module):
 
     def forward(self, seq, logprobs, reward):
 
-        # import pdb; pdb.set_trace()
         logprobs = to_contiguous(logprobs).view(-1)
         reward = to_contiguous(reward).view(-1)
         mask = (seq > 0).float()
         # add one to the right to count for the <eos> token
         mask = to_contiguous(torch.cat(
             [mask.new(mask.size(0), 1).fill_(1), mask[:, :-1]], 1)).view(-1)
-        #import pdb; pdb.set_trace()
         output = - logprobs * reward * Variable(mask)
         output = torch.sum(output) / torch.sum(mask)
 
@@ -72,7 +70,6 @@ class FeatPool(nn.Module):
             module_list += [module]
         self.feat_list = nn.ModuleList(module_list)
 
-        # self.embed = nn.Sequential(nn.Linear(sum(feat_dims), out_size), nn.ReLU(), nn.Dropout(dropout))
 
     def forward(self, feats):
         """
@@ -82,7 +79,6 @@ class FeatPool(nn.Module):
         out = torch.cat([m(feats[i].squeeze(1))
                          for i, m in enumerate(self.feat_list)], 1)
 
-        # out = self.embed(torch.cat(feats, 2).squeeze(1))
         return out
 
 
@@ -120,10 +116,8 @@ class RNNUnit(nn.Module):
 
         if opt.model_type == 'standard':
             self.input_size = opt.input_encoding_size
-        elif opt.model_type in ['concat', 'manet']:
-            # import pdb; pdb.set_trace()
-            # self.input_size = 1024
-            self.input_size = opt.input_encoding_size + 2048
+        elif opt.model_type == 'concat':
+            self.input_size = opt.input_encoding_size + self.rnn_size * 4
 
         self.rnn = getattr(
             nn,
@@ -139,41 +133,18 @@ class RNNUnit(nn.Module):
         return output.squeeze(0), state
 
 
-class MANet(nn.Module):
-    """
-    MANet: Modal Attention
-    """
-
-    def __init__(self, video_encoding_size, rnn_size, num_feats):
-        super(MANet, self).__init__()
-        self.video_encoding_size = video_encoding_size
-        self.rnn_size = rnn_size
-        self.num_feats = num_feats
-
-        self.f_feat_m = nn.Linear(self.video_encoding_size, self.num_feats)
-        self.f_h_m = nn.Linear(self.rnn_size, self.num_feats)
-        self.align_m = nn.Linear(self.num_feats, self.num_feats)
-
-    def forward(self, x, h):
-        f_feat = self.f_feat_m(x)
-        f_h = self.f_h_m(h.squeeze(0))  # assuming now num_layers is 1
-        att_weight = nn.Softmax()(self.align_m(nn.Tanh()(f_feat + f_h)))
-        att_weight = att_weight.unsqueeze(2).expand(
-            x.size(0), self.num_feats, self.video_encoding_size / self.num_feats)
-        att_weight = att_weight.contiguous().view(x.size(0), x.size(1))
-        return x * att_weight
 
 class DynamicGraph(nn.Module):
-    def __init__(self):
+    def __init__(self, mc_cls, mc_size):
         super(DynamicGraph, self).__init__()
 
-        self.seg_label_emb = nn.Linear(60, 2048, bias=False)
+        self.seg_label_emb = nn.Linear(mc_cls, mc_size, bias=False)
         self.seg_label_ada = nn.Sequential(
-                nn.Linear(2048, 2048),
+                nn.Linear(mc_size, mc_size),
                 nn.ReLU(),
             )
         self.seg_fea_ada = nn.Sequential(
-                nn.Linear(2048, 2048),
+                nn.Linear(mc_size, mc_size),
                 nn.ReLU(),
             )
 
@@ -202,13 +173,11 @@ class GAT(nn.Module):
         self.out_att = GraphAttentionLayer(nhid * nheads, out_dim, dropout=dropout, alpha=alpha, concat=False)
 
     def forward(self, x, adj):
-        # import pdb; pdb.set_trace()
         x = F.dropout(x, self.dropout, training=self.training)
         x = torch.cat([att(x, adj) for att in self.attentions], dim=-1)
         x = F.dropout(x, self.dropout, training=self.training)
         x = F.elu(self.out_att(x, adj))
         return x.mean(2)
-        # return x
 
 class PositionalEncoding(nn.Module):
 
@@ -235,9 +204,7 @@ class TransformerGraph(nn.Module):
         self.opt = opt
         self.rnn_size = int(rnn_size)
 
-        # import pdb; pdb.set_trace()
-
-        self.graph_emb = GAT(nfeat=200, 
+        self.graph_emb = GAT(nfeat=self.opt.total_node, 
                             nhid=8, 
                             out_dim=self.rnn_size, 
                             dropout=0.6, 
@@ -257,7 +224,6 @@ class TransformerGraph(nn.Module):
         return mask
 
     def forward(self, sg_adj, sg_feat, sg_mask):
-        # import pdb; pdb.set_trace()
 
         sgs_feat = self.graph_emb(sg_feat, sg_adj)
 
@@ -288,6 +254,8 @@ class CaptionModel(nn.Module):
         self.seq_length = opt.seq_length
         self.feat_dims = opt.feat_dims
         self.num_feats = len(self.feat_dims)
+        self.mc_size = opt.mc_size
+        self.mc_cls = opt.mc_cls
         self.seq_per_img = opt.train_seq_per_img
         self.model_type = opt.model_type
         self.bos_index = 1  # index of the <bos> token
@@ -332,7 +300,7 @@ class CaptionModel(nn.Module):
             nn.ReLU(),
         )
 
-        self.seg_graph = DynamicGraph()
+        self.seg_graph = DynamicGraph(self.mc_cls, self.mc_size)
         self.seg_mapping = nn.Sequential(
             nn.Linear(256, 256),
             nn.ReLU(),
@@ -343,7 +311,7 @@ class CaptionModel(nn.Module):
             nn.ReLU(),
         )
 
-        self.video_graph_emb = GAT(nfeat=201, 
+        self.video_graph_emb = GAT(nfeat=opt.total_node + 1, 
                                 nhid=4, 
                                 out_dim=int(self.rnn_size/2), 
                                 dropout=0.6, 
@@ -359,12 +327,6 @@ class CaptionModel(nn.Module):
             nn.ReLU(),
         )
         
-
-        if self.model_type == 'manet':
-            self.manet = MANet(
-                self.video_encoding_size,
-                self.rnn_size,
-                self.num_feats)
       
     def set_ss_prob(self, p):
         self.ss_prob = p
@@ -435,7 +397,6 @@ class CaptionModel(nn.Module):
         start_i = -1 if self.model_type == 'standard' else 0
         end_i = seq.size(1) - 1
 
-        # import pdb; pdb.set_trace()
         
         bs = int(batch_size/self.seq_per_img)
         seg_out_fea = self.seg_graph(seg_fea, seg_label)
@@ -494,13 +455,10 @@ class CaptionModel(nn.Module):
             xt = self.xt_mapping(xt)
             # import pdb; pdb.set_trace()
             context = self.context_mapping(torch.cat([fc_feats, all_sg_feat, seg_fea], 1))
-            # context = self.context_mapping(torch.cat([fc_feats, sgs_feat_p, seg_fea, video_sg_feat], 1))
             output, state = self.core(torch.cat([xt, context], 1), state)
                 
             if token_idx >= 0:
-                # import pdb; pdb.set_trace()
                 output = F.log_softmax(self.logit(self.dropout(output)), dim=-1)
-                # output = self.logit(self.dropout(output))
                 outputs.append(output)
                 
         # only returns outputs of seq input

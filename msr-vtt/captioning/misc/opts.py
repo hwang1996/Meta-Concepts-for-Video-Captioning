@@ -9,7 +9,7 @@ def parse_opts():
     parser.add_argument(
         '--scene_graph_path',
         type=str,
-        default='data/graph/',
+        default='../data/graph/',
         help='path to the pickle file containing scene graph information')
     parser.add_argument(
         '--total_node',
@@ -21,17 +21,17 @@ def parse_opts():
     parser.add_argument(
         '--train_label_h5',
         type=str,
-        default='data/metadata/msrvtt_train_sequencelabel.h5',
+        default='../data/metadata/msrvtt_train_sequencelabel.h5',
         help='path to the h5file containing the preprocessed dataset')
     parser.add_argument(
         '--val_label_h5',
         type=str,
-        default='data/metadata/msrvtt_val_sequencelabel.h5',
+        default='../data/metadata/msrvtt_val_sequencelabel.h5',
         help='path to the h5file containing the preprocessed dataset')
     parser.add_argument(
         '--test_label_h5',
         type=str,
-        default='data/metadata/msrvtt_test_sequencelabel.h5',
+        default='../data/metadata/msrvtt_test_sequencelabel.h5',
         help='path to the h5file containing the preprocessed dataset')
 
     parser.add_argument(
@@ -39,10 +39,10 @@ def parse_opts():
         type=str,
         nargs='+',
         default=[
-            "data/feature/msrvtt_train_irv2_mp1.h5",
-            "data/feature/msrvtt_train_c3d_mp1.h5",
-            "data/feature/msrvtt_train_mfcc_mp1.h5",
-            "data/feature/msrvtt_train_category_mp1.h5",
+            "../data/feature/msrvtt_train_irv2_mp1.h5",
+            "../data/feature/msrvtt_train_c3d_mp1.h5",
+            "../data/feature/msrvtt_train_mfcc_mp1.h5",
+            "../data/feature/msrvtt_train_category_mp1.h5",
         ],
         help='path to the h5 file containing extracted features')
     parser.add_argument(
@@ -50,10 +50,10 @@ def parse_opts():
         type=str,
         nargs='+',
         default=[
-            "data/feature/msrvtt_val_irv2_mp1.h5",
-            "data/feature/msrvtt_val_c3d_mp1.h5",
-            "data/feature/msrvtt_val_mfcc_mp1.h5",
-            "data/feature/msrvtt_val_category_mp1.h5",
+            "../data/feature/msrvtt_val_irv2_mp1.h5",
+            "../data/feature/msrvtt_val_c3d_mp1.h5",
+            "../data/feature/msrvtt_val_mfcc_mp1.h5",
+            "../data/feature/msrvtt_val_category_mp1.h5",
         ],
         help='path to the h5 file containing extracted features')
     parser.add_argument(
@@ -61,50 +61,50 @@ def parse_opts():
         type=str,
         nargs='+',
         default=[
-            "data/feature/msrvtt_test_irv2_mp1.h5",
-            "data/feature/msrvtt_test_c3d_mp1.h5",
-            "data/feature/msrvtt_test_mfcc_mp1.h5",
-            "data/feature/msrvtt_test_category_mp1.h5",
+            "../data/feature/msrvtt_test_irv2_mp1.h5",
+            "../data/feature/msrvtt_test_c3d_mp1.h5",
+            "../data/feature/msrvtt_test_mfcc_mp1.h5",
+            "../data/feature/msrvtt_test_category_mp1.h5",
         ],
         help='path to the h5 file containing extracted features')
 
     parser.add_argument(
         '--train_cocofmt_file',
         type=str,
-        default='data/metadata/msrvtt_train_cocofmt.json',
+        default='../data/metadata/msrvtt_train_cocofmt.json',
         help='Gold captions in MSCOCO format to cal language metrics')
     parser.add_argument(
         '--val_cocofmt_file',
         type=str,
-        default='data/metadata/msrvtt_val_cocofmt.json',
+        default='../data/metadata/msrvtt_val_cocofmt.json',
         help='Gold captions in MSCOCO format to cal language metrics')
     parser.add_argument(
         '--test_cocofmt_file',
         type=str,
-        default='data/metadata/msrvtt_test_cocofmt.json',
+        default='../data/metadata/msrvtt_test_cocofmt.json',
         help='Gold captions in MSCOCO format to cal language metrics')
 
     parser.add_argument(
         '--train_node_lmdb',
         type=str,
-        default='data/graph/msrvtt_seg_node_train',
+        default='../data/graph/msrvtt_seg_node_train',
         help='path to the lmdb file containing the preprocessed segmentation output')
     parser.add_argument(
         '--val_node_lmdb',
         type=str,
-        default='data/graph/msrvtt_seg_node_val',
+        default='../data/graph/msrvtt_seg_node_val',
         help='path to the lmdb file containing the preprocessed segmentation output')
     parser.add_argument(
         '--test_node_lmdb',
         type=str,
-        default='data/graph/msrvtt_seg_node_test',
+        default='../data/graph/msrvtt_seg_node_test',
         help='path to the lmdb file containing the preprocessed segmentation output')
 
 
     parser.add_argument(
         '--train_bcmrscores_pkl',
         type=str,
-        default='data/metadata/msrvtt_train_evalscores.pkl',
+        default='../data/metadata/msrvtt_train_evalscores.pkl',
         help='Pre-computed Cider-D metric for all captions')
     
     # Optimization: General
@@ -243,7 +243,7 @@ def parse_opts():
     parser.add_argument(
         '--train_cached_tokens',
         type=str,
-        default='metadata/msrvtt_train_ciderdf.pkl',
+        default='../data/metadata/msrvtt_train_ciderdf.pkl',
         help='Path to idx document frequencies to cal Cider on training data')
     parser.add_argument(
         '--expand_feat',

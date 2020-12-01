@@ -1,9 +1,9 @@
 CUDA_VISIBLE_DEVICES=0 python misc/train.py \
-			--checkpoint_path model/run \
-			--model_file model/run/model.pth \
-			--best_model_file model/run/model_best.pth \
-			--result_file model/run/test_results.json \
-			--start_from model/run/model_best.pth \
+			--checkpoint_path ../model/run \
+			--model_file ../model/run/model.pth \
+			--best_model_file ../model/run/model_best.pth \
+			--result_file ../model/run/test_results.json \
+			--start_from ../model/run/model.pth \
 			--batch_size 32 \
 			--rnn_num_layers 1 \
 			--learning_rate 8e-5 \
@@ -16,4 +16,4 @@ CUDA_VISIBLE_DEVICES=0 python misc/train.py \
 			--use_mixer=0 \
 			--scb_captions=0 \
 			--save_checkpoint_every 1 \
-			2>&1 | tee model/run/log.txt
+			2>&1 | tee ../model/run/log.txt

@@ -18,68 +18,7 @@ from pycocoevalcap.bleu.bleu import Bleu
 from pycocoevalcap.rouge.rouge import Rouge
 from pycocoevalcap.meteor.meteor import Meteor
 
-# import cPickle
 import pickle
-
-class LabelSmoothingLoss(nn.Module):
-    """
-    With label smoothing,
-    KL-divergence between q_{smoothed ground truth prob.}(w)
-    and p_{prob. computed by model}(w) is minimized.
-    """
-    def __init__(self, label_smoothing, tgt_vocab_size, ignore_index=-100):
-        assert 0.0 < label_smoothing <= 1.0
-        self.ignore_index = ignore_index
-        super(LabelSmoothingLoss, self).__init__()
-
-        self.log_softmax = nn.LogSoftmax(dim=-1)
-
-        smoothing_value = label_smoothing / (tgt_vocab_size - 1)  # count for the ground-truth word
-        one_hot = torch.full((tgt_vocab_size,), smoothing_value)
-        # one_hot[self.ignore_index] = 0
-        self.register_buffer("one_hot", one_hot.unsqueeze(0))
-
-        self.one_hot = self.one_hot.cuda()
-        self.confidence = 1.0 - label_smoothing
-
-    def forward(self, output, target, mask):
-        """
-        output (FloatTensor): batch_size x n_classes
-        target (LongTensor): batch_size, with indices in [-1, tgt_vocab_size-1], `-1` is ignored
-        """
-        # import pdb; pdb.set_trace()
-        target = target[:, :output.size(1)]
-        valid_indices = target != self.ignore_index  # ignore examples with target value -1
-        target = target[valid_indices]
-        # output = self.log_softmax(output[valid_indices])
-
-        model_prob = self.one_hot.repeat(target.size(0), 1)
-        model_prob.scatter_(1, target.unsqueeze(1), self.confidence)
-        target = target.cpu()
-        return nn.functional.kl_div(output.view(-1, output.size(2)), model_prob, reduction="batchmean")
-        # return nn.functional.kl_div(output, model_prob, reduction="sum")
-
-
-class MaskedCrossEntropyCriterion(_WeightedLoss):
-
-    def __init__(self, ignore_index=[-100], reduce=None):
-        super(MaskedCrossEntropyCriterion, self).__init__()
-        self.padding_idx = ignore_index
-        self.reduce = reduce
-
-    def forward(self, outputs, targets):
-        lprobs = torch.nn.functional.log_softmax(outputs, dim=-1)
-        lprobs = lprobs.view(-1, lprobs.size(-1))
-
-        for idx in self.padding_idx:
-            # remove padding idx from targets to allow gathering without error (padded entries will be suppressed later)
-            targets[targets == idx] = 0
-
-        nll_loss = -lprobs.gather(dim=-1, index=targets.unsqueeze(1))
-        if self.reduce:
-            nll_loss = nll_loss.sum()
-
-        return nll_loss.squeeze()
 
 def adjust_learning_rate(opt, optimizer, epoch):
     """Sets the learning rate to the initial LR

@@ -7,3 +7,6 @@
 [submodule "msr-vtt/coco-caption"]
 	path = msr-vtt/coco-caption
 	url = https://github.com/ruotianluo/coco-caption.git
+[submodule "msr-vtt/cider"]
+	path = msr-vtt/cider
+	url = https://github.com/ruotianluo/cider.git

@@ -138,15 +138,9 @@ def train(
                 'METEOR': Meteor(),
                 'ROUGE_L': Rouge()
                 }[opt.eval_metric]
-            
-            #logger.info('loading gt refs: %s', train_loader.cocofmt_file)
-            #gt_refs = utils.load_gt_refs(train_loader.cocofmt_file)
 
         mixer_from = opt.mixer_from
         if opt.use_mixer == 1 and rl_training:
-            #annealing_mixer = opt.ss_k / \
-            #    (opt.ss_k + np.exp((infos['epoch'] - opt.use_rl_after) / opt.ss_k))
-            #annealing_mixer = int(round(annealing_mixer * opt.seq_length))
             
             # -1 for annealing
             if opt.mixer_from == -1:
@@ -157,15 +151,6 @@ def train(
         
         scb_captions = opt.scb_captions
         if opt.use_cst == 1 and rl_training:
-            # if opt.use_cst == 1 and opt.ss_k == 0,
-            # then do not using annealing, but the fixed scb_captions provided
-            #annealing_robust = opt.ss_k / \
-            #    (opt.ss_k + np.exp((infos['epoch'] - opt.use_rl_after) / opt.ss_k))
-            #annealing_robust = int(round((1 - annealing_robust) * seq_per_img))
-            
-            # do not use robust before fully mixed
-            # if opt.use_mixer == 1 and mixer_from > 1:
-            #    opt.use_cst_after = infos['epoch']
                 
             # if opt.scb_captions is -1, then use the annealing value, 
             # otherwise, use the set value
@@ -176,12 +161,8 @@ def train(
         optimizer.zero_grad()
         model.set_seq_per_img(seq_per_img)
 
-        # import pdb; pdb.set_trace()
 
         if rl_training:
-            # sampling from model distribution
-            # model_res, logprobs = model.sample(
-            #    feats, {'sample_max': 0, 'expand_feat': opt.expand_feat, 'temperature': 1})
             
             # using mixer
             pred, model_res, logprobs = model(feats, labels, frame_sg, video_sg, seg_out)
@@ -191,20 +172,6 @@ def train(
                 greedy_baseline, _ = model.sample(feats, frame_sg, video_sg, seg_out, \
                                            {'sample_max': 1, 'expand_feat': opt.expand_feat})
 
-            """
-            if opt.loglevel.upper() == 'DEBUG' and opt.use_cst == 0:
-                model_sents = utils.decode_sequence(opt.vocab, model_res)
-                baseline_sents = utils.decode_sequence(opt.vocab, greedy_baseline)
-                for jj, sent in enumerate(zip(model_sents, baseline_sents)):
-                    if opt.expand_feat == 1:
-                        video_id = data['ids'][
-                            jj // train_loader.get_seq_per_img()]
-                    else:
-                        video_id = data['ids'][jj]
-                    logger.debug(
-                        '[%d] video %s\n\t Model: %s \n\t Greedy: %s' %
-                        (jj, video_id, sent[0], sent[1]))
-            """
  
             if opt.use_cst == 1:
                 bcmrscores = data['bcmrscores']    
@@ -224,25 +191,6 @@ def train(
                                                                           seq_per_img=train_loader.get_seq_per_img(),
                                                                           use_eos=opt.use_eos)
                 
-            """[[
-            #import pdb; pdb.set_trace()
-            rl_loss = 0
-            xe_loss = 0
-            # -1 because we don't count <eos> here
-            
-            if mixer_from < model_res.size(1)-1:
-                rl_loss = rl_criterion(
-                    model_res[:,mixer_from:],
-                    logprobs[:,mixer_from:],
-                    Variable(
-                        torch.from_numpy(reward[:,mixer_from:]).float().cuda(),
-                        requires_grad=False))
-            
-            if mixer_from > 0:
-                xe_loss = criterion(pred[:, :mixer_from], labels[:, 1:mixer_from+1], masks[:, 1:mixer_from+1])
-            
-            loss = rl_loss + xe_loss
-            """
             
             loss = rl_criterion(
                     model_res,
@@ -252,18 +200,9 @@ def train(
                         requires_grad=False))
             
         else:
-            # outputs, gt_seq, ids = model(feats, labels, adjs, adj_rels, sg_mask)
-            # outputs = outputs[:, :-1, :].contiguous()
-            # outputs = outputs.view(outputs.size(0) * outputs.size(1), -1)
-            # loss = criterion(outputs, labels[:, 1:].contiguous().reshape(-1))
-            # loss = torch.sum(loss.view(labels[:, 1:].size())*masks[:, 1:], dim=-1) / torch.sum(masks[:, 1:], dim=-1)
-            # loss = loss.mean()
-            
-            # import pdb; pdb.set_trace()
 
             pred = model(feats, labels, frame_sg, video_sg, seg_out)[0]
             loss = criterion(pred, labels[:, 1:], masks[:, 1:])
-            # loss = criterion(pred, labels[:, 1:])
             
 
         loss.backward()
@@ -307,14 +246,11 @@ def train(
                 opt, optimizer, infos['epoch'] - infos['start_epoch'])
             logger.info('===> Learning rate: %f: ', learning_rate)
         
-        # with torch.no_grad():
-        #     results = validate(model, criterion, val_loader, opt)
         with torch.no_grad():
             if (infos['epoch'] >= opt.save_checkpoint_from and
                     infos['epoch'] % opt.save_checkpoint_every == 0 and
                     not checkpoint_checked):
                 # evaluate the validation performance
-                # import pdb; pdb.set_trace()
                 results = validate(model, criterion, val_loader, opt)
                 logger.info(
                     'Validation output: %s',
@@ -359,7 +295,6 @@ def validate(model, criterion, loader, opt):
     for ii in range(num_iters):
         data = loader.get_batch()
         feats = [feat for feat in data['feats']]
-        # import pdb; pdb.set_trace()
 
         if loader.has_label:
             labels = data['labels']
@@ -405,22 +340,14 @@ def validate(model, criterion, loader, opt):
         seg_out = [seg_fea, seg_label]
 
         if loader.has_label:
-            # outputs, gt_seq, ids = model(feats, labels, sg_adj, sg_feat, sg_mask)
-            # outputs = outputs[:, :-1, :].contiguous()
-            # outputs = outputs.view(outputs.size(0) * outputs.size(1), -1)
-            # loss = criterion(outputs, labels[:, 1:].contiguous().reshape(-1))
-            # loss = torch.sum(loss.view(labels[:, 1:].size())*masks[:, 1:], dim=-1) / torch.sum(masks[:, 1:], dim=-1)
-            # loss = loss.mean()
 
             pred, gt_seq, _ = model(feats, labels, frame_sg, video_sg, seg_out)
             loss = criterion(pred, labels[:, 1:], masks[:, 1:])
-            # loss = criterion(pred, labels[:, 1:])
 
             if opt.output_logp == 1:
                 gt_avglogp = utils.compute_avglogp(gt_seq, outputs.data)
                 gt_avglogps.extend(gt_avglogp)
                 
-            # loss = criterion(pred, labels[:, 1:], masks[:, 1:])
             loss_sum += loss.item()
 
         seq, logseq = model.sample(feats, frame_sg, video_sg, seg_out, {'beam_size': opt.beam_size})
@@ -443,10 +370,8 @@ def validate(model, criterion, loader, opt):
     results = {}
     lang_stats = {}
 
-    # import pdb; pdb.set_trace()
     if opt.language_eval == 1 and loader.has_label:
         logger.info('>>> Language evaluating ...')
-        # import pdb; pdb.set_trace()
         tmp_checkpoint_json = os.path.join(
             opt.model_file + str(uuid.uuid4()) + '.json')
         json.dump(predictions, open(tmp_checkpoint_json, 'w'))
@@ -603,9 +528,7 @@ if __name__ == '__main__':
 
     xe_criterion = CrossEntropyCriterion()
     rl_criterion = RewardCriterion()
-    # criterion = utils.MaskedCrossEntropyCriterion(ignore_index=[0], reduce=False) ##end 0; begin 1
-    # smooth_crit = utils.LabelSmoothingLoss(label_smoothing=0.1, \
-    #                                        tgt_vocab_size=opt.vocab_size, ignore_index=-1)
+
 
     if torch.cuda.is_available():
         model.cuda()
@@ -613,27 +536,15 @@ if __name__ == '__main__':
     logger.info('Start training...')
     start = datetime.now()
 
-    # params_graph = list(model.graph_emb.parameters()) + list(model.graph_emb_squ.parameters()) \
-    #                     + list(model.pos_encoder.parameters()) + list(model.graph_emb_trans.parameters()) \
-    #                     + list(model.graph_att.parameters())
-
-
-    # params_graph = list(model.graph_fea.parameters())
-    # params = list(model.parameters())
-    # base_params = list(set(params).difference(set(params_graph)))
-
     optimizer = optim.Adam(model.parameters(), lr=opt.learning_rate)
-    # optimizer = optim.Adam([{'params': base_params},
-    #                       {'params': params_graph, 'lr': opt.learning_rate}],
-    #                       lr=opt.learning_rate)
+
     
     infos = train(
         model,
         xe_criterion,
         optimizer,
         train_loader,
-        test_loader,
-        # val_loader,
+        val_loader,
         opt,
         rl_criterion=rl_criterion)
     logger.info(
@@ -643,7 +554,6 @@ if __name__ == '__main__':
         infos['best_iter'],
         infos['best_epoch'])
 
-    # import pdb; pdb.set_trace()
     logger.info('Training time: %s', datetime.now() - start)
 
     if opt.result_file:

@@ -41,7 +41,6 @@ class DataLoader():
         self.adj_pair_l = pickle.load(open(opt['scene_graph_path']+'adj_pair_edgenode_35.pkl', 'rb'))
         logger.info('DataLoader loading processed scene graph global graph file: %s', opt['scene_graph_path']+'adj_pair_global.pkl')
         self.adj_pair_g = pickle.load(open(opt['scene_graph_path']+'adj_pair_global.pkl', 'rb'))
-        # self.seg_feas = pickle.load(open(opt['scene_graph_path']+'seg_fea.pkl', 'rb'))
         self.total_node = opt['total_node']
 
         logger.info('DataLoader loading processed segmentation features: %s', opt['node_lmdb'])

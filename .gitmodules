@@ -1,18 +1,6 @@
-[submodule "msrvtt/coco-caption"]
-	path = msrvtt/coco-caption
-	url = https://github.com/ruotianluo/coco-caption.git
-[submodule "msrvtt/cider"]
-	path = msrvtt/cider
-	url = https://github.com/ruotianluo/cider.git
-[submodule "msr-vtt/coco-caption"]
-	path = msr-vtt/coco-caption
-	url = https://github.com/ruotianluo/coco-caption.git
-[submodule "msr-vtt/cider"]
-	path = msr-vtt/cider
-	url = https://github.com/ruotianluo/cider.git
-[submodule "msr-vtt/captioning/cider"]
-	path = msr-vtt/captioning/cider
-	url = https://github.com/ruotianluo/cider.git
 [submodule "msr-vtt/captioning/coco-caption"]
 	path = msr-vtt/captioning/coco-caption
 	url = https://github.com/ruotianluo/coco-caption.git
+[submodule "msr-vtt/captioning/cider"]
+	path = msr-vtt/captioning/cider
+	url = https://github.com/hwang1996/cider.git

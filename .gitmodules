@@ -4,3 +4,6 @@
 [submodule "msrvtt/cider"]
 	path = msrvtt/cider
 	url = https://github.com/ruotianluo/cider.git
+[submodule "msr-vtt/coco-caption"]
+	path = msr-vtt/coco-caption
+	url = https://github.com/ruotianluo/coco-caption.git

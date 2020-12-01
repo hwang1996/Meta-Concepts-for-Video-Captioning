@@ -4,3 +4,6 @@
 [submodule "msr-vtt/captioning/cider"]
 	path = msr-vtt/captioning/cider
 	url = https://github.com/hwang1996/cider.git
+[submodule "msr-vtt/meta_concept_loc/SceneGraphParser"]
+	path = msr-vtt/meta_concept_loc/SceneGraphParser
+	url = https://github.com/vacancy/SceneGraphParser.git

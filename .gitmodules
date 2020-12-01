@@ -10,3 +10,6 @@
 [submodule "msr-vtt/cider"]
 	path = msr-vtt/cider
 	url = https://github.com/ruotianluo/cider.git
+[submodule "msr-vtt/captioning/cider"]
+	path = msr-vtt/captioning/cider
+	url = https://github.com/ruotianluo/cider.git

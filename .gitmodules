@@ -13,3 +13,6 @@
 [submodule "msr-vtt/captioning/cider"]
 	path = msr-vtt/captioning/cider
 	url = https://github.com/ruotianluo/cider.git
+[submodule "msr-vtt/captioning/coco-caption"]
+	path = msr-vtt/captioning/coco-caption
+	url = https://github.com/ruotianluo/coco-caption.git

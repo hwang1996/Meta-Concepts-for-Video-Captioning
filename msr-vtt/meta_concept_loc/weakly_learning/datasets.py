@@ -99,7 +99,9 @@ class CaptionDataset(Dataset):
                     ix = np.random.randint(ncap)
                     seq[q] = seq_all[ix]
 
-            all_captions = seq
+                all_captions = seq
+            else:
+                all_captions = seq_all
             return imgs, caption, caplen, all_captions
 
     def __len__(self):

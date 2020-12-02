@@ -101,7 +101,7 @@ class CaptionDataset(Dataset):
 
                 all_captions = seq
             else:
-                all_captions = seq_all
+                all_captions = seq_all[:self.seq_per_img]
             return imgs, caption, caplen, all_captions
 
     def __len__(self):

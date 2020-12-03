@@ -1,0 +1,77 @@
+{
+    "name": "debug",
+    "n_gpu": 1,
+    "use_synch_bn": true,
+
+    "arch": {
+        "type": "PSPNet",
+        "args": {
+            "backbone": "resnet50",
+            "freeze_bn": false,
+            "freeze_backbone": false
+        }
+    },
+
+    "train_loader": {
+        "type": "Custom",
+        "args":{
+            "data_dir": "../video_text/data/MSR-VTT/",
+            "batch_size": 8,
+            "val": true,
+            "shuffle": false,
+            "split": "train",
+            "mode": "fine",
+            "crop_size": 380,
+            "return_id": true, 
+            "num_workers": 8
+        }
+    },
+
+    "val_loader": {
+        "type": "Custom",
+        "args":{
+            "data_dir": "../video_text/data/MSR-VTT/",
+            "batch_size": 8,
+            "val": true,
+            "shuffle": false,
+            "split": "val",
+            "mode": "fine",
+            "crop_size": 380,
+            "return_id": true, 
+            "num_workers": 4
+        }
+    },
+
+    "optimizer": {
+        "type": "SGD",
+        "differential_lr": true,
+        "args":{
+            "lr": 0.05,
+            "weight_decay": 1e-4,
+            "momentum": 0.9
+        }
+    },
+
+    "loss": "CrossEntropyLoss2d",
+    "ignore_index": 0,
+    "lr_scheduler": {
+        "type": "Poly",
+        "args": {}
+    },
+
+    "trainer": {
+        "epochs": 500,
+        "save_dir": "saved/",
+        "save_period": 2,
+  
+        "monitor": "max Mean_IoU",
+        "early_stop": 100,
+        
+        "tensorboard": true,
+        "log_dir": "saved/runs",
+        "log_per_iter": 20,
+
+        "val": true,
+        "val_per_epochs": 1
+    }
+}

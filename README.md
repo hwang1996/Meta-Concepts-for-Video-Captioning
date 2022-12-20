@@ -21,25 +21,25 @@ git clone --recurse-submodules https://github.com/hwang1996/CMG
 Please download MSR-VTT dataset [here](https://github.com/mynlp/cst_captioning) to use our codes.
 
 ## Preparation
-1. Extract video key frames
+- Extract video key frames
 ```
 cd preprocess/
 python extract_key_frames.py
 ```
-2. Use the weakly learning approach to produce meta concepts
+- Use the weakly learning approach to produce meta concepts
 ```
 cd meta_concept_loc/weakly_learning
 python train.py
 python generate_synonym.py
 python extract_mask.py
 ```
-3. Train the segmentation model for meta concept inference
+- Train the segmentation model for meta concept inference
 ```
 cd meta_concept_loc/segmentation
 python train_custom.py
 python extract_fea.py
 ```
-4. Please refer to this [repo](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) to extract scene graphs
+- Please refer to this [repo](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) to extract scene graphs
 
 ## Video captioning training
 

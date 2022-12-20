@@ -3,7 +3,7 @@
 ## Official PyTorch implementation
 **Cross-Modal Graph With Meta Concepts for Video Captioning** <br>
 *IEEE Transactions on Image Processing (TIP)* <br>
-Hao Wang, Guosheng Lin, Steven C. H. Hoi, and Chunyan Miao
+Hao Wang, Guosheng Lin, Steven C. H. Hoi, and Chunyan Miao <br>
 [Paper](https://arxiv.org/pdf/2108.06458.pdf)
 
 ## Requirements

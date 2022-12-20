@@ -7,3 +7,6 @@
 [submodule "msr-vtt/meta_concept_loc/SceneGraphParser"]
 	path = msr-vtt/meta_concept_loc/SceneGraphParser
 	url = https://github.com/vacancy/SceneGraphParser.git
+[submodule "meta_concept_loc/SceneGraphParser"]
+	path = meta_concept_loc/SceneGraphParser
+	url = https://github.com/vacancy/SceneGraphParser

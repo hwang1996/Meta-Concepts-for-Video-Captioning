@@ -1,6 +1,7 @@
 # Cross-Modal Graph With Meta Concepts for Video Captioning (TIP)
 ## Official PyTorch implementation
-*Cross-Modal Graph With Meta Concepts for Video Captioning*  
+**Cross-Modal Graph With Meta Concepts for Video Captioning** 
+*IEEE Transactions on Image Processing (TIP)* 
 Hao Wang, Guosheng Lin, Steven C. H. Hoi, and Chunyan Miao  
 [Paper](https://arxiv.org/pdf/2108.06458.pdf)
 
@@ -34,16 +35,23 @@ cd meta_concept_loc/segmentation
 python train_custom.py
 python extract_fea.py
 ```
-4. Please refer to [here](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) for scene graph generation
+4. Please refer to this [repo](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) to extract scene graphs
 
-## Training and Testing
+## Training
+
+### Cross-entropy training
 ```
 cd captioning
-### Cross-entropy training
 bash run_train.sh
+```
+
 ### Reinforcement learning
+```
 bash run_rl_train.sh
-### Test
+```
+
+## Testing
+```
 bash run_test.sh
 ```
 

@@ -20,7 +20,7 @@ git clone --recurse-submodules https://github.com/hwang1996/CMG
 ## Dataset
 Please download MSR-VTT dataset [here](https://github.com/mynlp/cst_captioning) to use our codes.
 
-## Before training
+## Preparation
 1. Extract video key frames
 ```
 cd preprocess/
@@ -41,7 +41,7 @@ python extract_fea.py
 ```
 4. Please refer to this [repo](https://github.com/KaihuaTang/Scene-Graph-Benchmark.pytorch) to extract scene graphs
 
-## Training
+## Video captioning training
 
 ### Cross-entropy training
 ```

@@ -11,7 +11,7 @@ Hao Wang, Guosheng Lin, Steven C. H. Hoi, and Chunyan Miao <br>
 * python 3.6 or higher
 
 ```
-git clone --recurse-submodules https://github.com/hwang1996/CMG
+git clone --recurse-submodules https://github.com/hwang1996/Meta-Concepts-for-Video-Captioning
 ```
 
 ## Dataset

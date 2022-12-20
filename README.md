@@ -15,7 +15,7 @@ git clone --recurse-submodules https://github.com/hwang1996/CMG
 ```
 
 ## Dataset
-Please download MSR-VTT dataset [here](https://github.com/mynlp/cst_captioning) to use our codes.
+Please download MSR-VTT dataset from [here](https://github.com/mynlp/cst_captioning) to use our codes.
 
 ## Preparation
 - Extract video key frames

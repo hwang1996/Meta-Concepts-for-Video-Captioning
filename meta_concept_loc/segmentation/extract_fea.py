@@ -70,17 +70,13 @@ class Trainer(BaseTrainerCustom):
         with torch.no_grad():
             val_visual = []
             for batch_idx, (data, target, _id) in enumerate(tbar):
-                #data, target = data.to(self.device), target.to(self.device)
                 # import pdb; pdb.set_trace()
                 # LOSS
                 output, output_fea = self.model(data)
 
-                # pos = torch.sigmoid(output) >= THRESHOLD
                 output = torch.sigmoid(output)
                 neg = (output <  THRESHOLD)
-                # output[pos] = 1
                 output[neg] = 0
-                # output = F.interpolate(output, output_fea.shape[2:])
                 for i in range(len(output)):
                     label = [j for j in range(len(output[i])) if output[i, j].sum() != 0]
                     gt_label = [j for j in range(len(target[i])) if 1 in target[i, j]]
@@ -89,9 +85,7 @@ class Trainer(BaseTrainerCustom):
                         select_fea = output[i][label].unsqueeze(1)
                         select_fea = output_fea[i] * select_fea
                         select_fea = select_fea.mean(-1).mean(-1)
-                        # select_fea = {k: sparse.csr_matrix(select_fea[v].reshape(select_fea[v].shape[0], -1)) \
-                        # 				for k in label for v in range(len(select_fea))}
-                        # select_fea = [sparse.csr_matrix(select_fea[v].reshape(select_fea[v].shape[0], -1)) for v in range(len(select_fea))]
+                
                         txn.put(_id[i].encode(), pickle.dumps([label, select_fea]))
                     else:
                         count += 1
@@ -141,8 +135,6 @@ if __name__=='__main__':
     parser.add_argument('-d', '--device', default=None, type=str,
                            help='indices of GPUs to enable (default: all)')
     args = parser.parse_args()
-
-
 
     config = json.load(open(args.config))
     # if args.resume:

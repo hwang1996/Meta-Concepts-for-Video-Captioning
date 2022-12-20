@@ -119,7 +119,6 @@ def extract_key_frames(params):
             frame = Frame(i, diff_sum_mean)
             frames.append(frame)
         prev_frame = curr_frame
-    
 
     #smoothing window size
     key_frame_num = 6
@@ -133,24 +132,6 @@ def extract_key_frames(params):
         for i in range(1, len(frames)):
             if (rel_change(np.float(frames[i - 1].diff), np.float(frames[i].diff)) >= THRESH):
                 keyframe_id_set.add(frames[i].id)   
-    # if USE_LOCAL_MAXIMA:
-    #     # print("Using Local Maxima")
-    #     diff_array = np.array(frame_diffs)
-    #     sm_diff_array = smooth(diff_array, len_window)
-    #     frame_indexes = np.asarray(argrelextrema(sm_diff_array, np.greater))[0]
-    #     for i in frame_indexes:
-    #         # keyframe_id_set.add(frames[i - 1].id)
-    #         frame_id = i+1
-    #         key_ids.append(os.path.join(video_id, str(frame_id).zfill(6)+'.jpg'))
-    #     if key_ids == []:
-    #         USE_TOP_ORDER = True
-
-    # if USE_TOP_ORDER:
-    #     # sort the list in descending order
-    #     frames.sort(key=operator.attrgetter("diff"), reverse=True)
-
-    #     for keyframe in frames[:NUM_TOP_FRAMES]:
-    #             key_ids.append(os.path.join(video_id, str(keyframe.id).zfill(6)+'.jpg'))
 
     if USE_LOCAL_MAXIMA:
         # print("Using Local Maxima")
@@ -168,10 +149,8 @@ def extract_key_frames(params):
             assert str(frames[frame_id].id).zfill(6)+'.jpg' in frame_list
             key_ids.append(os.path.join(video_id, str(frames[sample_id].id).zfill(6)+'.jpg'))
             key_ids.append(os.path.join(video_id, str(frames[frame_id].id).zfill(6)+'.jpg'))
-            # import pdb; pdb.set_trace()
         if len(frame_indexes) == 0:
             # sort the list in descending order
-            # frames.sort(key=operator.attrgetter("diff"), reverse=True)
             sorted_idx = sorted(range(len(frames)), key=lambda k: frames[k].diff, reverse=True)
             frame_id = np.where(np.argsort(sorted_idx)==0)[0][0]
             if frame_id == 0:
@@ -186,34 +165,6 @@ def extract_key_frames(params):
 
     key_ids = list(set(key_ids))
     key_ids.sort()
-
-    #######################################################
-    ###### Write the selected frames to the disk ##########
-    #######################################################
-
-    # demo_imgs_path = 'demo_imgs'
-    # original_frames_path = demo_imgs_path+'/original_frames/'
-    # key_frames_path = demo_imgs_path+'/key_frames/'
-    # if os.path.exists(demo_imgs_path):
-    #     shutil.rmtree(demo_imgs_path)
-    #     os.makedirs(original_frames_path)
-    #     os.makedirs(key_frames_path)
-    # else:
-    #     os.makedirs(original_frames_path)
-    #     os.makedirs(key_frames_path)
-
-
-    # keyframe_id_set = frame_indexes
-    # for i in range(frame_count):
-    #     frame_id = i+1
-    #     frame_path = os.path.join(split_path, video_id, str(frame_id).zfill(6)+'.jpg')
-    #     frame = cv2.imread(frame_path)
-    #     cv2.imwrite(original_frames_path + str(frame_id).zfill(6)+'.jpg', frame)
-
-    #     frame_name = os.path.join(video_id, str(frame_id).zfill(6)+'.jpg')
-    #     # import pdb; pdb.set_trace()
-    #     if frame_name in key_ids:
-    #         cv2.imwrite(key_frames_path + str(frame_id).zfill(6)+'.jpg', frame)
 
     return key_ids
 
@@ -235,10 +186,6 @@ if __name__ == "__main__":
     video_path = '../msrvtt_frames/'
     split_path = video_path
     video_ids = os.listdir(split_path)
-
-    # for i, video_id in tqdm(enumerate(video_ids)):
-    #     key_ids = extract_key_frames(video_id)
-    #     import pdb; pdb.set_trace()
 
     pool = multiprocessing.Pool(20)
     for key_ids in tqdm(pool.imap_unordered(extract_key_frames, video_ids), total=len(video_ids)):

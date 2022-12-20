@@ -24,62 +24,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 NUM_CLASS = 60
 THRESHOLD = 150
 
-
-def caption_image_beam_search(encoder, decoder, frame_id_list, caption, caplen, word_map, beam_size=3):
-    """
-    Reads an image and captions it with beam search.
-
-    :param encoder: encoder model
-    :param decoder: decoder model
-    :param image_path: path to image
-    :param word_map: word map
-    :param beam_size: number of sequences to consider at each decode-step
-    :return: caption, weights for visualization
-    """
-
-    k = beam_size
-    vocab_size = len(word_map)
-
-    # Read image and process
-    transform_re = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),   ## (width, height) -> (height,width)
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-    ])
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-    transform = transforms.Compose([normalize])
-    
-    ret = []
-    for image_path in frame_id_list:
-        img_path = os.path.join('../../data/msrvtt_frames/', image_path)
-        image = Image.open(img_path)
-        image = transform_re(image).to(device) # (3, 256, 256)
-
-        ret.append(image)
-    imgs = torch.stack(ret)
-
-    imgs = imgs.reshape(-1, imgs.size(-3), imgs.size(-2), imgs.size(-1))
-
-    batch_size = 1
-    img_len = 4
-
-    # Encode
-    encoder_out = encoder(imgs)  # (1, enc_image_size, enc_image_size, encoder_dim)
-    ih, iw, ndf = encoder_out.size(-3), encoder_out.size(-2), encoder_out.size(-1)
-    encoder_out = encoder_out.reshape(batch_size, img_len, ih, iw, ndf)
-    encoder_out_new = encoder_out.new(batch_size, ih*int(img_len/2), iw*int(img_len/2), ndf)
-    for i in range(batch_size):
-        for j in range(img_len):
-            h = int(j/int(img_len/2))
-            w = j%int(img_len/2)
-            encoder_out_new[i, ih*h:ih*(h+1), iw*w:iw*(w+1), :] = encoder_out[i, j]
-
-    scores, caps_sorted, decode_lengths, alphas, sort_ind = decoder(encoder_out_new, caption, caplen)
-    alphas = alphas.reshape(batch_size, -1, ih*int(img_len/2), iw*int(img_len/2))
-
-    return caps_sorted.cpu().squeeze().numpy(), alphas.cpu().detach().squeeze()
-
 def cmp_convert(alphas):
     alphas = (alphas - np.min(alphas)) / (np.max(alphas) - np.min(alphas))
     hmap = 1 - alphas
@@ -132,8 +76,6 @@ def mask_gen(cls_id):
     ncap = ix2 - ix1
 
     att_sze = int(alphas.shape[-1]/int(num_frames/2))
-    all_maps = []
-    all_hard_mask = []
     all_soft_mask = []
 
     # for i, image in enumerate(ret):
@@ -156,17 +98,6 @@ def mask_gen(cls_id):
             # Visualize caption and attention of best sequence
             words = [rev_word_map[ind].decode() for ind in list(caption[1:caplen+1].numpy())]
             maps, labels = visualize_att(maps, labels, words, current_alpha, synonyms_class)
-
-        ####################### all hard mask ################################
-        # activated_map = np.stack(maps).min(axis=0)
-        # activated_pos = np.stack(maps).argmin(axis=0)
-        # map_class = np.where(activated_map < THRESHOLD, activated_map, 255)
-        # for idx in range(len(labels)):
-        #     mask = (activated_pos == idx)    # select the position for the idx'th map
-        #     mask_map = (map_class < THRESHOLD)    # select the positions having minimum values (highest activations) 
-        #     mask_ = np.where(mask == True, mask_map == mask, False) # the intersections
-        #     map_class = np.where(mask_==True, labels[idx], map_class)
-        # all_maps.append(map_class)
 
         ####################### soft mask ################################
         #### use union between masks
@@ -197,8 +128,7 @@ if __name__ == '__main__':
     synonyms_freq_list = pickle.load(open('../../data/metadata/synonyms_freq_list_60.pkl', 'rb'))
     synonyms_class = synonyms_freq_list['synonyms_class']
 
-    # splits = ['train', 'val']
-    splits = ['val']
+    splits = ['train', 'val']
     for split in splits:
         env = lmdb.open("../../data/graph/msrvtt_soft_mask_"+split, map_size=1099511627776)
         txn = env.begin(write = True)

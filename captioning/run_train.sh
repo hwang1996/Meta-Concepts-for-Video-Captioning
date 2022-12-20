@@ -3,7 +3,6 @@ CUDA_VISIBLE_DEVICES=1 python misc/train.py \
 			--model_file ../model/run/model.pth \
 			--best_model_file ../model/run/model_best.pth \
 			--result_file ../model/run/test_results.json \
-			--start_from ../model/run/model_.pth \
 			--batch_size 32 \
 			--rnn_num_layers 1 \
 			--learning_rate 8e-5 \

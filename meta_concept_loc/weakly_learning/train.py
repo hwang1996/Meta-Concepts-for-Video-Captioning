@@ -11,7 +11,7 @@ from utils import *
 from nltk.translate.bleu_score import corpus_bleu
 
 # Data parameters
-data_name = 'tri_msrvtt'  # base name shared by data files
+data_name = 'msrvtt'  # base name shared by data files
 
 # Model parameters
 emb_dim = 512  # dimension of word embeddings

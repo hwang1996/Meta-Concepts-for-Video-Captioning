@@ -1,9 +1,9 @@
 CUDA_VISIBLE_DEVICES=3 python misc/train.py \
-			--checkpoint_path output/model/expand/all_rl \
-			--model_file output/model/expand/all_rl/model.pth \
-			--best_model_file output/model/expand/all_rl/model_best.pth \
-			--result_file output/model/expand/all_rl/test_results.json \
-			--start_from output/model/expand/all/model_best.pth \
+			--checkpoint_path output/model/run/all_rl \
+			--model_file output/model/run/all_rl/model.pth \
+			--best_model_file output/model/run/all_rl/model_best.pth \
+			--result_file output/model/run/all_rl/test_results.json \
+			--start_from output/model/run/model_best.pth \
 			--batch_size 32 \
 			--rnn_num_layers 1 \
 			--learning_rate 8e-5 \

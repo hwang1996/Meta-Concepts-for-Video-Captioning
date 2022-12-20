@@ -53,7 +53,6 @@ class Trainer(BaseTrainer):
         train_visual = []
         for batch_idx, (data, target) in enumerate(tbar):
             self.data_time.update(time.time() - tic)
-            #data, target = data.to(self.device), target.to(self.device)
             self.lr_scheduler.step(epoch=epoch-1)
             
             # import pdb; pdb.set_trace()
@@ -96,13 +95,6 @@ class Trainer(BaseTrainer):
             neg = torch.sigmoid(output) <  THRESHOLD
             output[pos] = 1
             output[neg] = 0
-            # labels = []
-            # gt_labels = []
-            # for i in range(len(output)):
-            #     label = [j for j in range(len(output[i])) if 1 in output[i, j]]
-            #     gt_label = [j for j in range(len(target[i])) if 1 in target[i, j]]
-            #     labels.append(label)
-            #     gt_labels.append(gt_label)
 
             seg_metrics = eval_metrics(output.long(), target, self.num_classes)
             self._update_seg_metrics(*seg_metrics)
@@ -137,7 +129,6 @@ class Trainer(BaseTrainer):
             self.writer.add_scalar(f'{self.wrt_mode}/{k}', v, self.wrt_step)
         for i, opt_group in enumerate(self.optimizer.param_groups):
             self.writer.add_scalar(f'{self.wrt_mode}/Learning_rate_{i}', opt_group['lr'], self.wrt_step)
-            #self.writer.add_scalar(f'{self.wrt_mode}/Momentum_{k}', opt_group['momentum'], self.wrt_step)
 
         # RETURN LOSS & METRICS
         log = {'loss': self.total_loss.average,
@@ -166,7 +157,6 @@ class Trainer(BaseTrainer):
                 bs = output.size(0)
                 num_class = output.size(1)
                 shape = self.val_loader.dataset.crop_size
-                # loss = self.loss(output.permute(0, 4, 1, 2, 3).reshape(bs, 2, num_class, shape*shape), target.reshape(bs, num_class, shape*shape))
                 loss = self.loss(output, target.float()) ## binary
                 if isinstance(self.loss, torch.nn.DataParallel):
                     loss = loss.mean()

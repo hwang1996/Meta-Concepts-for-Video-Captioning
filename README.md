@@ -40,13 +40,13 @@ python extract_fea.py
 
 ## Video captioning training
 
-### Cross-entropy training
+- Cross-entropy training
 ```
 cd captioning
 bash run_train.sh
 ```
 
-### Reinforcement learning
+- Reinforcement learning
 ```
 bash run_rl_train.sh
 ```

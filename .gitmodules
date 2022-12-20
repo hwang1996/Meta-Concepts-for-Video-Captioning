@@ -10,3 +10,9 @@
 [submodule "meta_concept_loc/SceneGraphParser"]
 	path = meta_concept_loc/SceneGraphParser
 	url = https://github.com/vacancy/SceneGraphParser
+[submodule "captioning/cider"]
+	path = captioning/cider
+	url = https://github.com/hwang1996/cider
+[submodule "captioning/coco-caption"]
+	path = captioning/coco-caption
+	url = https://github.com/ruotianluo/coco-caption

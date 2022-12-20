@@ -1,8 +1,12 @@
-# Cross-Modal Graph With Meta Concepts for Video Captioning (TIP)
+# Cross-Modal Graph With Meta Concepts for Video Captioning
+
 ## Official PyTorch implementation
 **Cross-Modal Graph With Meta Concepts for Video Captioning** 
+
 *IEEE Transactions on Image Processing (TIP)* 
+
 Hao Wang, Guosheng Lin, Steven C. H. Hoi, and Chunyan Miao  
+
 [Paper](https://arxiv.org/pdf/2108.06458.pdf)
 
 ## Requirements
